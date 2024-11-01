@@ -18,7 +18,7 @@ const finalLevelElement = document.getElementById('finalLevel');
 const state = {
     score: 0,
     level: 1,
-    lives: 9,
+    lives: 5,
     timeLeft: 30,
     discoveredActions: new Set(),
     particles: [],
@@ -483,7 +483,7 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // 绘制背景
-    ctx.fillStyle = '#E8F4F8';
+    ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // 绘制当前关卡的平台

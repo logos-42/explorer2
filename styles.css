@@ -20,7 +20,7 @@ canvas {
 }
 
 .panel {
-    background: white;
+    background: black;
     padding: 10px 20px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -54,7 +54,7 @@ canvas {
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.8);
-    color: white;
+    color: black;
     z-index: 1000;
 }
 

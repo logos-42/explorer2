@@ -31,14 +31,7 @@ const state = {
 // 关卡设计
 const levels = [
     {
-        platforms: [
-            { x: 300, y: 300, width: 200, height: 20 },
-            { x: 550, y: 200, width: 100, height: 20 }
-        ],
-        requiredActions: ['JUMP', 'SPRINT'],
-        hint: "尝试跳跃(↑)和冲刺(Shift)!"
-    },
-    {
+  
         platforms: [
             { x: 200, y: 300, width: 100, height: 20 },
             { x: 400, y: 250, width: 100, height: 20 },

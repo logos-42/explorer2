@@ -480,10 +480,12 @@ function checkCollision(rect1, rect2) {
 }
 
 function draw() {
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 绘制背景
-    ctx.fillStyle = '#E8F4F8';
+    // 绘制黑色背景
+    ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // 绘制当前关卡的平台

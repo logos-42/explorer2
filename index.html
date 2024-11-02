@@ -7,34 +7,33 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="actionHint"></div>
-    <div id="gameUI">
-        <div class="panel">
-            <div>分数: <span id="score">0</span></div>
-            <div>当前关卡: <span id="level">1</span></div>
-            <div>生命: <span id="lives">9</span></div>
-            <div>剩余时间: <span id="timeLeft">30</span>秒</div>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="gameUI">
+            <div class="panel">生命: <span id="lives">9</span></div>
+            <div class="panel">分数: <span id="score">0</span></div>
+            <div class="panel">关卡: <span id="level">1</span></div>
+            <div class="panel">时间: <span id="timeLeft">30</span>s</div>
+            <button id="muteButton">关闭声音</button>
         </div>
-        <div class="panel">
-            <div>提示: <span id="currentHint"></span></div>
-        </div>
-    </div>
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
-    <div class="panel">
-        <h3>发现的动作:</h3>
+        <div id="actionHint"></div>
         <div id="discoveredActions"></div>
+        <div id="currentHint"></div>
     </div>
+    
     <div id="startScreen" class="screen">
         <h1>高级动作探索游戏</h1>
         <p>探索并完成所有动作，但要小心时间和生命！</p>
         <button id="startButton">开始游戏</button>
     </div>
-    <div id="gameOverScreen" class="screen">
+    
+    <div id="gameOverScreen" class="screen" style="display:none;">
         <h1>游戏结束</h1>
         <p>你的得分: <span id="finalScore"></span></p>
         <p>你达到的关卡: <span id="finalLevel"></span></p>
         <button id="restartButton">重新开始</button>
     </div>
-    <script src="game.js"></script>
+
+    <script src="game-with-audio.js"></script>
 </body>
 </html>

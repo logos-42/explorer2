@@ -1,5 +1,8 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+g_scaleFactor = 1;
+let canvasWidth = 800;
+let canvasHeight = 400;
 const scoreElement = document.getElementById('score');
 const levelElement = document.getElementById('level');
 const livesElement = document.getElementById('lives');
@@ -136,45 +139,41 @@ const levels = [
     }
 ];
 
-// ... rest of the code (including checkAction function) ...
-
-function checkAction(actionName) {
-    // ... existing code ...
-    createEffect(player.x, player.y, color, 20); // existing effect creation
-
-    if (actionName === 'SLIDE') {
-        createEffect(player.x, player.y + player.height - 5, '#FFA500', 20);
-    } else if (actionName === 'WALL_SLIDE') {
-        createEffect(player.x + (player.facing === 'right' ? player.width : 0), player.y, '#8A2BE2', 20);
-    }
-    // ... rest of checkAction function ...
+function resizeCanvas() {
+    const container = document.getElementById('gameContainer');
+    const containerWidth = container.clientWidth;
+    canvasWidth = containerWidth;
+    canvasHeight = containerWidth / 2; // Maintain 2:1 aspect ratio
+    
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    
+    // Adjust game elements based on new canvas size
+    adjustGameElements();
 }
-// ... rest of the code (including checkAction function) ...
 
-function checkAction(actionName) {
-    // ... existing code ...
-    createEffect(player.x, player.y, color, 20); // existing effect creation
+function adjustGameElements() {
+    // Adjust player size and position
+    scaleFactor = canvasWidth / 800; // 800 is the original width
+    g_scaleFactor = scaleFactor;
+    player.width = 30 * scaleFactor;
+    player.height = 40 * scaleFactor;
+    player.x = player.x * scaleFactor;
+    player.y = player.y * scaleFactor;
 
-    if (actionName === 'SLIDE') {
-        createEffect(player.x, player.y + player.height - 5, '#FFA500', 20);
-    } else if (actionName === 'WALL_SLIDE') {
-        createEffect(player.x + (player.facing === 'right' ? player.width : 0), player.y, '#8A2BE2', 20);
-    }
-    // ... rest of checkAction function ...
+    // Adjust platforms
+    levels.forEach(level => {
+        level.platforms.forEach(platform => {
+            platform.x *= scaleFactor;
+            platform.y *= scaleFactor;
+            platform.width *= scaleFactor;
+            platform.height *= scaleFactor;
+        });
+    });
+
+    // You may need to adjust other game elements here
 }
-// ... rest of the code (including checkAction function) ...
 
-function checkAction(actionName) {
-    // ... existing code ...
-    createEffect(player.x, player.y, color, 20); // existing effect creation
-
-    if (actionName === 'SLIDE') {
-        createEffect(player.x, player.y + player.height - 5, '#FFA500', 20);
-    } else if (actionName === 'WALL_SLIDE') {
-        createEffect(player.x + (player.facing === 'right' ? player.width : 0), player.y, '#8A2BE2', 20);
-    }
-    // ... rest of checkAction function ...
-}
 
 // 玩家对象
 const player = {
@@ -211,6 +210,7 @@ const actions = {
     'WALL_SLIDE': '墙壁滑行',
     'BACKFLIP': '后空翻'
 };
+
 
 // 特效粒子系统
 class Particle {
@@ -275,11 +275,11 @@ function handleInput() {
     // 基础移动
     player.speedX = 0;
     if (keys['ArrowLeft']) {
-        player.speedX = -5;
+        player.speedX = -5 * g_scaleFactor;
         player.facing = 'left';
     }
     if (keys['ArrowRight']) {
-        player.speedX = 5;
+        player.speedX = 5 * g_scaleFactor;
         player.facing = 'right';
     }
 
@@ -298,13 +298,15 @@ function handleInput() {
     // 跳跃系统
     if (keys['ArrowUp']) {
         if (!player.isJumping) {
-            player.speedY = -12;
+            console.log("jump");
+            player.speedY = -12 * g_scaleFactor;
             player.isJumping = true;
             player.jumpCount = 1;
             createEffect(player.x, player.y, '#87CEEB');
             checkAction('JUMP');
         } else if (player.canDoubleJump && player.jumpCount === 1) {
-            player.speedY = -10;
+            console.log("double jump");
+            player.speedY = -10 * g_scaleFactor;
             player.jumpCount = 2;
             player.canDoubleJump = false;
             createEffect(player.x, player.y, '#FF69B4');
@@ -314,7 +316,7 @@ function handleInput() {
 
     // 墙壁跳跃
     if (player.isWallSliding && keys['ArrowUp'] && player.wallJumpCooldown <= 0) {
-        player.speedY = -12;
+        player.speedY = -12 * g_scaleFactor;
         player.speedX = player.facing === 'right' ? -15 : 15;
         player.wallJumpCooldown = 20;
         createEffect(player.x, player.y, '#FF4500');
@@ -332,7 +334,7 @@ function handleInput() {
 
     // 空中俯冲
     if (keys['ArrowDown'] && player.isJumping) {
-        player.speedY = 15;
+        player.speedY = 15 * g_scaleFactor;
         createEffect(player.x, player.y, '#9400D3');
         checkAction('AIR_DIVE');
     }
@@ -369,6 +371,13 @@ function checkComboActions() {
 }
 
 function checkAction(actionName) {
+    createEffect(player.x, player.y, '#FFA500', 20); // existing effect creation
+
+    if (actionName === 'SLIDE') {
+        createEffect(player.x, player.y + player.height - 5, '#FFA500', 20);
+    } else if (actionName === 'WALL_SLIDE') {
+        createEffect(player.x + (player.facing === 'right' ? player.width : 0), player.y, '#8A2BE2', 20);
+    }
     if (!state.discoveredActions.has(actionName)) {
         state.discoveredActions.add(actionName);
         state.score += 100;
@@ -411,7 +420,7 @@ function update()   {
     if (player.wallJumpCooldown > 0) player.wallJumpCooldown--;
 
     // 应用重力
-    player.speedY += 0.6;
+    player.speedY += 0.4 * g_scaleFactor;
     
     // 更新位置
     player.x += player.speedX;
@@ -421,6 +430,14 @@ function update()   {
     const currentLevel = levels[state.level - 1];
     let onGround = false;
     player.isWallSliding = false;
+    if (player.x < 0) player.x = 0;
+    if (player.x > canvasWidth - player.width) player.x = canvasWidth - player.width;
+    if (player.y > canvasHeight - player.height) {
+        player.y = canvasHeight - player.height;
+        player.speedY = 0;
+        player.isJumping = false;
+        player.canDoubleJump = true;
+    }
 
     // 地面碰撞
     if (player.y > canvas.height - player.height) {
@@ -482,11 +499,11 @@ function checkCollision(rect1, rect2) {
 function draw() {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    // 绘制黑色背景
+    // Draw background
     ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
     // 绘制当前关卡的平台
     ctx.fillStyle = '#4CAF50';
@@ -527,8 +544,8 @@ function startGame() {
     state.lives = 9;
     state.timeLeft = 30;
     state.discoveredActions.clear();
-    player.x = 100;
-    player.y = 200;
+    player.x = canvasWidth * 0.125; // 100 / 800 = 0.125
+    player.y = canvasHeight * 0.5; // 200 / 400 = 0.5
     updateUI();
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
@@ -599,8 +616,12 @@ function gameLoop() {
     }
 }
 
+// Call resizeCanvas initially and on window resize
+resizeCanvas();
+
 startButton.addEventListener('click', startGame);
 restartButton.addEventListener('click', startGame);
+window.addEventListener('resize', resizeCanvas);
 
 // 初始化提示
 currentHintElement.textContent = levels[0].hint;
